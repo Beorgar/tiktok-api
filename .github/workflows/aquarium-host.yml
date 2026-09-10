@@ -1,0 +1,26 @@
+name: Aquarium Host
+on:
+  push:
+    branches: [aquarium-host]
+    paths: ['.github/workflows/aquarium-host.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: aquarium-host
+      - name: Download Aquarium bundle
+        run: |
+          curl -fL 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-5114-81f4-bd68-5ee425e45ae9/raw?se=2026-09-10T20%3A41%3A06Z&sp=r&sv=2026-02-06&sr=b&scid=b6dfa0f5-6bab-59a6-bda1-c7c3557e2ed1&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-10T08%3A47%3A42Z&ske=2026-09-11T08%3A47%3A42Z&sks=b&skv=2026-02-06&sig=qP4NC42NRBo2Gtby0DvgQGdnp6IAiMs0JvRTbLjlFLQ%3D' -o aquarium.html
+          test -s aquarium.html
+      - name: Commit bundle
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add aquarium.html
+          git commit -m 'Publish Aquarium browser bundle' || exit 0
+          git push origin aquarium-host
